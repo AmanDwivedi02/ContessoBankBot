@@ -1,0 +1,23 @@
+{
+  "name": "contessobankbot",
+  "version": "1.0.0",
+  "description": "Bot for Contesso Bank",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sixthshadow42/ContessoBankBot.git"
+  },
+  "author": "Aman Dwivedi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sixthshadow42/ContessoBankBot/issues"
+  },
+  "homepage": "https://github.com/Sixthshadow42/ContessoBankBot#readme",
+  "dependencies": {
+    "botbuilder": "^3.12.0",
+    "restify": "^6.3.4"
+  }
+}
