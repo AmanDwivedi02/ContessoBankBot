@@ -12,11 +12,15 @@ exports.startDialog = function (bot) {
     bot.dialog('stockValueIntent', function(session, args){
         //Pulls out the company code
         var companyEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'companyCode');
+
         //Checks if the food entity was found
         if(companyEntity){
             session.send('Checking stock market for %s...', companyEntity.entity.toUpperCase());
-            //Insert Display Logic Here
-            stock.displayStockCard(companyEntity.entity, session);
+            //IDisplay Logic
+            session.sendTyping();
+            setTimeout(function () {
+                stock.displayStockCard(companyEntity.entity, session);
+            }, 100);
         } else {
             session.send("I couldn\'t find a company by that name.");
         }
