@@ -1,5 +1,6 @@
 //Setup requried packages and files
 var builder = require('botbuilder');
+var stock = require('./stockDisplay');
 
 exports.startDialog = function (bot) {
     //Luis Recognizer link
@@ -15,6 +16,7 @@ exports.startDialog = function (bot) {
         if(companyEntity){
             session.send('Checking stock market for %s...', companyEntity.entity.toUpperCase());
             //Insert Display Logic Here
+            stock.displayStockCard(companyEntity.entity, session);
         } else {
             session.send("I couldn\'t find a company by that name.");
         }
