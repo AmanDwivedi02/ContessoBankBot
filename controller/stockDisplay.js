@@ -1,4 +1,4 @@
-var rest = require('../API/RestClient');
+var rest = require('../API/restClient');
 var builder = require('botbuilder');
 
 exports.displayStockCard = function getStockData(companyCode, session){

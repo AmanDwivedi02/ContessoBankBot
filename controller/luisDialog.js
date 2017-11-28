@@ -1,6 +1,7 @@
 //Setup requried packages and files
 var builder = require('botbuilder');
 var stock = require('./stockDisplay');
+var feedback = require('./textAnalytics');
 
 exports.startDialog = function (bot) {
     //Luis Recognizer link
@@ -16,9 +17,10 @@ exports.startDialog = function (bot) {
         //Checks if the food entity was found
         if(companyEntity){
             session.send('Checking stock market for %s...', companyEntity.entity.toUpperCase());
-            //IDisplay Logic
+            //Typing indicator for when bot is processing
             session.sendTyping();
-            setTimeout(function () {
+            setTimeout(function() {
+                //Display Logic
                 stock.displayStockCard(companyEntity.entity, session);
             }, 100);
         } else {
@@ -26,6 +28,29 @@ exports.startDialog = function (bot) {
         }
     }).triggerAction({
         matches: 'stockValueIntent'
+    });
+
+    bot.dialog('feedbackIntent', [
+        function(session, args, next){
+            session.dialogData.args = args || {};
+            session.conversationData["feedbackText"] = session.message.text;
+            if (!session.conversationData["username"]){
+                builder.Prompts.text(session, "Enter your account username.");
+            } else{
+                next();
+            }
+        }, function(session, results, next){
+            if (results.response){
+                session.conversationData["username"] = results.response;
+            }
+           // session.send("Thank you for your feedback!");
+           session.sendTyping();
+           setTimeout(function(){
+               feedback.obtainFeedback(session, session.conversationData["username"], session.conversationData["feedbackText"]);
+           }, 100);
+        }
+    ]).triggerAction({
+        matches: 'feedbackIntent'
     });
 
 
