@@ -34,7 +34,7 @@ exports.obtainFeedback = function(session, username, feedback){
 
 function validResponse(body, username){
     if (body && body.documents && body.documents[0].score){
-        //Call easy tables functionality///////////////////////////////////////////////
+        //Call easy tables functionality
         console.log('HIT');
         var feedback = body.documents[0].score;
         if (feedback >= 0.75){
@@ -56,6 +56,55 @@ function validResponse(body, username){
     }
 }
 
+exports.getFeedback = function(session){
+    rest.getFeedback(session, processFeedback)
+};
+
+function processFeedback(message, session){
+    console.log('I got here');
+    var feedbackResponse = JSON.parse(message);
+    console.log('I got here too');
+    var feedbackScore = [];
+    var feedback = [];
+    var totalFeedback = 0;
+    var averageFeedback = 0
+    var totalScore = 0;
+    var averageScore = 0;
+    var feedbackToSend;
+
+    for (var index in feedbackResponse){
+        feedbackScore.push(feedbackResponse[index].score);
+        feedback.push(feedbackResponse[index].feedback);
+        totalScore += feedbackResponse[index].score;
+        if (feedbackResponse[index].feedback == 'Great'){
+            totalFeedback += 4;
+        } else if (feedbackResponse[index].feedback == 'Good'){
+            totalFeedback += 3;
+        } else if (feedbackResponse[index].feedback == 'Bad'){
+            totalFeedback += 2;
+        } else if (feedbackResponse[index].feedback == 'Terrible'){
+            totalFeedback += 1;
+        }
+    }
+
+    averageScore = 100*(totalScore/feedbackScore.length);
+    averageFeedback = totalFeedback/feedback.length;
+
+    if (averageFeedback >= 3.5){
+        feedbackToSend = 'Great';
+    } else if (averageFeedback >= 2.5){
+        feedbackToSend = 'Good';
+    } else if (averageFeedback >= 1.5){
+        feedbackToSend = 'Bad';
+    } else if (averageFeedback >= 1){
+        feedbackToSend = 'Terrible';
+    }
+
+    session.send('The average feedback score is: %s percent', averageScore.toFixed(2));
+    session.send('Average overall feed back is: %s', feedbackToSend);
+}
+
+//Not using this function
 exports.sendFeedback = function(session, username, feedback){
     var url = 'http://bankfeedback.azurewebsites.net/tables/bankFeedback';
     rest.postFeedback(url, username, feedback);

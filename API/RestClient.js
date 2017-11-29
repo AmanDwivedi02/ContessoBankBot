@@ -34,3 +34,24 @@ exports.postFeedback = function(username, feedback, score){
         }
       });
 };
+
+exports.getFeedback = function(session, callback){
+    var options = {
+        url: 'http://bankfeedback.azurewebsites.net/tables/bankFeedback',
+        method: 'GET',
+        headers: {
+            'ZUMO-API-VERSION': '2.0.0',
+            'Content-Type':'application/json'
+        },
+    };
+    
+    request(options, function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            console.log(body);
+            callback(body, session);
+        }
+        else{
+            console.log(error);
+        }
+      });
+}

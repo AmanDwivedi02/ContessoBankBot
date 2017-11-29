@@ -2,6 +2,7 @@
 var builder = require('botbuilder');
 var stock = require('./stockDisplay');
 var feedback = require('./textAnalytics');
+var rest = require('../API/restClient');
 
 exports.startDialog = function (bot) {
     //Luis Recognizer link
@@ -30,12 +31,15 @@ exports.startDialog = function (bot) {
         matches: 'stockValueIntent'
     });
 
+    //Resonse if user leaves feedback
     bot.dialog('feedbackIntent', [
         function(session, args, next){
             session.dialogData.args = args || {};
+            //Store feedback
             session.conversationData["feedbackText"] = session.message.text;
+            //Checks that a username has been entered
             if (!session.conversationData["username"]){
-                builder.Prompts.text(session, "Enter your account username.");
+                builder.Prompts.text(session, "Please enter your username.");
             } else{
                 next();
             }
@@ -43,14 +47,22 @@ exports.startDialog = function (bot) {
             if (results.response){
                 session.conversationData["username"] = results.response;
             }
-           // session.send("Thank you for your feedback!");
+           // Typing indicator while processing feedback through Text Analytics and Easy Tables
            session.sendTyping();
            setTimeout(function(){
+               //Processing feedback and posting to Easy Tables
                feedback.obtainFeedback(session, session.conversationData["username"], session.conversationData["feedbackText"]);
            }, 100);
         }
     ]).triggerAction({
         matches: 'feedbackIntent'
+    });
+
+    //Response if user wants to check overall feedback
+    bot.dialog('getFeedbackIntent', function(session){
+        feedback.getFeedback(session);
+    }).triggerAction({
+        matches: 'getFeedbackIntent'
     });
 
 
