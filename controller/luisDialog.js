@@ -15,7 +15,7 @@ exports.startDialog = function (bot) {
         //Pulls out the company code
         var companyEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'companyCode');
 
-        //Checks if the food entity was found
+        //Checks if the company entity was found
         if(companyEntity){
             session.send('Checking stock market for %s...', companyEntity.entity.toUpperCase());
             //Typing indicator for when bot is processing
