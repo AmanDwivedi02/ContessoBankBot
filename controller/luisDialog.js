@@ -60,10 +60,43 @@ exports.startDialog = function (bot) {
 
     //Response if user wants to check overall feedback
     bot.dialog('getFeedbackIntent', function(session){
+        //Pulls feedback from easy tables and processes
         feedback.getFeedback(session);
     }).triggerAction({
         matches: 'getFeedbackIntent'
     });
 
+    //Response if user wants to delete their feedback
+    bot.dialog('deleteFeedbackIntent', [
+        function(session, args, next){
+            session.dialogData.args = args || {};
+            //Store feedback
+            session.conversationData["feedbackText"] = session.message.text;
+            //Checks that a username has been entered
+            if (!session.conversationData["username"]){
+                builder.Prompts.text(session, "Please enter your username.");
+            } else{
+                next();
+            }
+        }, function(session, results, next){
+            if (results.response){
+                session.conversationData["username"] = results.response;
+            }
+           // Typing indicator while processing feedback through Text Analytics and Easy Tables
+           session.sendTyping();
+           setTimeout(function(){
+               //Processing feedback and posting to Easy Tables
+               feedback.deleteFeedback(session, session.conversationData["username"]);
+           }, 100);
+        }
+    ]).triggerAction({
+        matches: 'deleteFeedbackIntent'
+    });
 
+    //Welcome user
+    bot.dialog('welcomeIntent', function(session){
+        session.send('Hi there! What would you like to do today?');
+    }).triggerAction({
+        matches: 'welcomeIntent'
+    });
 }

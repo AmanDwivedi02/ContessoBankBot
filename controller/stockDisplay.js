@@ -4,7 +4,7 @@ var builder = require('botbuilder');
 exports.displayStockCard = function getStockData(companyCode, session){
     var url = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol="+companyCode+"&interval=1min&apikey=GNTXMYFTOGOOWD20"
     rest.getStockData(url, session, companyCode, getClosePrice)
-}
+};
 
 function getClosePrice(message, companyCode, session){
     //Parses Json

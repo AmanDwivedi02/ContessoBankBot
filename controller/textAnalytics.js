@@ -57,13 +57,14 @@ function validResponse(body, username){
 }
 
 exports.getFeedback = function(session){
-    rest.getFeedback(session, processFeedback)
+    session.sendTyping();
+    setTimeout(function(){
+        rest.getFeedback(session, processFeedback)
+    }, 100);
 };
 
 function processFeedback(message, session){
-    console.log('I got here');
     var feedbackResponse = JSON.parse(message);
-    console.log('I got here too');
     var feedbackScore = [];
     var feedback = [];
     var totalFeedback = 0;
@@ -103,6 +104,20 @@ function processFeedback(message, session){
     session.send('The average feedback score is: %s percent', averageScore.toFixed(2));
     session.send('Average overall feed back is: %s', feedbackToSend);
 }
+
+exports.deleteFeedback = function(session, username){
+    rest.getFeedback(session, function(message, session){
+        var tableOut = JSON.parse(message);
+        var username = session.conversationData["username"];
+
+        for (var index in tableOut){
+            if (tableOut[index].username === username){
+                console.log(tableOut[index]);
+                rest.deleteFeedback(session, tableOut[index].id);
+            }
+        }
+    });
+};
 
 //Not using this function
 exports.sendFeedback = function(session, username, feedback){

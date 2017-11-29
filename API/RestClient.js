@@ -54,4 +54,31 @@ exports.getFeedback = function(session, callback){
             console.log(error);
         }
       });
-}
+};
+
+exports.deleteFeedback = function(session, id){
+    console.log('hit1');
+    var url = 'http://bankfeedback.azurewebsites.net/tables/bankFeedback' + '\\' + id;
+    console.log(url);
+    var options = {
+        url: url,
+        method: 'DELETE',
+        headers: {
+            'ZUMO-API-VERSION': '2.0.0',
+            'Content-Type':'application/json'
+        }
+    };
+    console.log('hit2');
+    request(options,function (err, res, body){
+        if(!err && res.statusCode === 200){
+            console.log(body);
+            console.log('Done');
+            session.send('Your feedback has been removed.');
+        }else {
+            session.send('Oops, something went wrong!');
+            console.log('Heres the error');
+            console.log(err);
+            console.log(res);
+        }
+    })
+};
